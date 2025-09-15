@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
+        jdk 'JAVA_HOME'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/jagadishkasarla/java_project.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('EcommerceApp') {   // 👈 go into subdirectory where pom.xml exists
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('EcommerceApp') {
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Archive Artifact') {
+            steps {
+                archiveArtifacts artifacts: 'EcommerceApp/target/*.jar', fingerprint: true
+            }
+        }
+    }
+}
