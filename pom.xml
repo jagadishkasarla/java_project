@@ -1,38 +1,67 @@
-pipeline {
-    agent any
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-    tools {
-        maven 'MAVEN_HOME'
-        jdk 'JAVA_HOME'
-    }
+    <groupId>com.ecommerce</groupId>
+    <artifactId>ecommerce-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/jagadishkasarla/java_project.git'
-            }
-        }
+    <name>ecommerce-app</name>
+    <description>Sample Java E-Commerce Application for Jenkins CI/CD</description>
 
-        stage('Build') {
-            steps {
-                dir('EcommerceApp') {   // 👈 go into subdirectory where pom.xml exists
-                    sh 'mvn clean package -DskipTests'
-                }
-            }
-        }
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>   <!-- Use your JDK version -->
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-        stage('Test') {
-            steps {
-                dir('EcommerceApp') {
-                    sh 'mvn test'
-                }
-            }
-        }
+    <dependencies>
+        <!-- JUnit for testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-        stage('Archive Artifact') {
-            steps {
-                archiveArtifacts artifacts: 'EcommerceApp/target/*.jar', fingerprint: true
-            }
-        }
-    }
-}
+    <build>
+        <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Jar plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>Main</mainClass> <!-- Adjust with your package if needed -->
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire for tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
